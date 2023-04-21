@@ -7,20 +7,20 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JokeTranslationGetting {
+public class JokeTranslationRs {
 
     private TranslatedData data;
 
     @lombok.Data
     @AllArgsConstructor
     @NoArgsConstructor
-    public class TranslatedData {
+    public static class TranslatedData {
         private Translations translations;
 
         @lombok.Data
         @AllArgsConstructor
         @NoArgsConstructor
-        public class Translations {
+        public static class Translations {
             private String translatedText;
         }
     }

@@ -9,10 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Joke {
-
     private String type;
     private String setup;
     private String punchline;
     private Integer id;
-
 }

@@ -5,10 +5,8 @@ import lombok.Data;
 
 @Data
 @AllArgsConstructor
-public class JokeTranslationSending {
-
+public class JokeTranslationRq {
     String q;
     String source;
     String target;
-
 }

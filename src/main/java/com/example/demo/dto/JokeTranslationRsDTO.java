@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 public class JokeTranslationRsDTO {
-
     class Data {
         private List<Translations> translations;
 

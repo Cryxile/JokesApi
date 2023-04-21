@@ -8,11 +8,9 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class AddJokeDTO {
-
+public class JokeDTO {
     private String type;
     private String setup;
     private String punchline;
     private Integer id;
-
 }

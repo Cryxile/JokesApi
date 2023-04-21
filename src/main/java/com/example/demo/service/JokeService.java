@@ -1,21 +1,19 @@
 package com.example.demo.service;
 
-import com.example.demo.model.Joke;
+import com.example.demo.model.OriginalAndTranslatedJoke;
 
 import java.util.List;
 
 public interface JokeService {
     void addJoke(String type, String setup, String punchline, Integer id);
 
-    void addJoke(Joke joke);
-
     void deleteJoke(Integer id);
 
     void editJoke(String type, String setup, String punchline, Integer id);
 
-    List<Joke> getJokeList();
+    List<OriginalAndTranslatedJoke> getJokeList();
 
-    Joke getJoke(Integer id);
+    OriginalAndTranslatedJoke getJoke(Integer id);
 
-    List<Joke> getRandomJoke();
+    OriginalAndTranslatedJoke getRandomJoke();
 }
