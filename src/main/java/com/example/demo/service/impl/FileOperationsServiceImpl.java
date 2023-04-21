@@ -19,6 +19,11 @@ public class FileOperationsServiceImpl implements FileOperationsService {
     private final File jokeFile = new File(JOKES_FILE_PATH);
     private final File metaFile = new File(META_FILE_PATH);
 
+    public FileOperationsServiceImpl() {
+        //TODO if file exists
+        //TODO jokeFile + metaFile
+    }
+
     @Override
     public void writeToFile(List<OriginalAndTranslatedJoke> origAndTranslJokes, Integer prevListLength) {
         try (RandomAccessFile toJokesFile = new RandomAccessFile(jokeFile, "rw");
@@ -88,9 +93,9 @@ public class FileOperationsServiceImpl implements FileOperationsService {
         if (metaFile.length() > 0 && jokeFile.length() > 0) {
             if (isJokeExistInFile(id)) {
 //                try {
-                    //File tempFile = File.createTempFile("temp_data", ".tmp", new File("src/main/java/com/example/demo/db/"));
-                    removeFromJokesFile(id);
-                    removeFromMetaFile(id);
+                //File tempFile = File.createTempFile("temp_data", ".tmp", new File("src/main/java/com/example/demo/db/"));
+                removeFromJokesFile(id);
+                removeFromMetaFile(id);
 //                    if (!tempFile.delete()) {
 //                        throw new IOException();
 //                    }
@@ -151,9 +156,9 @@ public class FileOperationsServiceImpl implements FileOperationsService {
                                 isEndOfFile = true;
                             }
                         }
-                    if (!tempFile.delete()) {
-                        throw new IOException();
-                    }
+                        if (!tempFile.delete()) {
+                            throw new IOException();
+                        }
                         //toMetaFile.writeBytes(tempStringBuilder.toString());
                     } else {
                         toMetaFile.setLength(jokeMetaPosition);
@@ -205,9 +210,9 @@ public class FileOperationsServiceImpl implements FileOperationsService {
                         isEndOfFile = true;
                     }
                 }
-                    if (!tempFile.delete()) {
-                        throw new IOException();
-                    }
+                if (!tempFile.delete()) {
+                    throw new IOException();
+                }
                 //toMetaFile.writeBytes(getFromTempFile());
                 //toJokesFile.writeBytes(tempString.toString());
                 toJokesFile.setLength(toJokesFile.length() - 1);
@@ -218,6 +223,8 @@ public class FileOperationsServiceImpl implements FileOperationsService {
                 toJokesFile.setLength(toJokesFile.length() - 1);
             }
         } catch (IOException ex) {
+            //TODO custom exceptions
+            //TODO ex.getMessage()
             throw new RuntimeException(ex);
         }
     }

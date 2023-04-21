@@ -31,6 +31,7 @@ public class TranslationServiceImpl implements TranslationService {
         );
         HttpEntity<JokeTranslationRqDTO> request = new HttpEntity<>(jokeTranslationRqDTO, headers);
 
+        //TODO spaces
         JokeTranslationRs response = restTemplate.postForObject(TRANSLATION_URL,
                 request,
                 JokeTranslationRs.class
@@ -42,7 +43,7 @@ public class TranslationServiceImpl implements TranslationService {
         }
     }
 
-
+//TODO spaces
 
 }
 

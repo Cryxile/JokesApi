@@ -6,7 +6,6 @@ import com.example.demo.model.OriginalAndTranslatedJoke;
 import com.example.demo.service.FileOperationsService;
 import com.example.demo.service.JokeService;
 import com.example.demo.service.TranslationService;
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -18,16 +17,20 @@ import java.util.List;
 import static com.example.demo.utils.Constants.*;
 
 
-@RequiredArgsConstructor
 @Service
 public class JokeServiceImpl implements JokeService {
-
     private final RestTemplate restTemplate;
-    private final List<OriginalAndTranslatedJoke> origAndTranslJokes = new ArrayList<>();
-    private final FileOperationsService fileWritingService;
     private final TranslationService translationService;
+    private final FileOperationsService fileWritingService;
+    private final List<OriginalAndTranslatedJoke> origAndTranslJokes;
 
+    public JokeServiceImpl(RestTemplate restTemplate, FileOperationsService fileWritingService, TranslationService translationService) {
+        this.restTemplate = restTemplate;
+        this.fileWritingService = fileWritingService;
+        this.translationService = translationService;
 
+        origAndTranslJokes = new ArrayList<>();
+    }
 
     @Override
     public void addJoke(String type, String setup, String punchline, Integer id) {
@@ -53,6 +56,7 @@ public class JokeServiceImpl implements JokeService {
 //                    ORIGINAL_LANGUAGE,
 //                    TARGET_LANGUAGE
 //            );
+            //TODO Integer vs int
             Integer prevListLength = origAndTranslJokes.size();
             origAndTranslJokes.add(originalAndTranslatedJoke);
             fileWritingService.writeToFile(origAndTranslJokes, prevListLength);
@@ -118,6 +122,8 @@ public class JokeServiceImpl implements JokeService {
                     ORIGINAL_LANGUAGE,
                     TARGET_LANGUAGE
             );
+
+            //TODO Integer vs int
             Integer prevListLength = origAndTranslJokes.size();
             origAndTranslJokes.add(originalAndTranslatedJoke);
             fileWritingService.writeToFile(origAndTranslJokes, prevListLength);

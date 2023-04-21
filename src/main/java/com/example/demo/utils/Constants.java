@@ -1,6 +1,8 @@
 package com.example.demo.utils;
 
 public class Constants {
+
+    //TODO public final static
     public static final String RESOURCE_URL = "https://official-joke-api.appspot.com/random_joke";
     public static final String TRANSLATION_URL = "https://deep-translate1.p.rapidapi.com/language/translate/v2";
     public  static final String JOKES_FILE_PATH = "src/main/java/com/example/demo/db/jokes.json";
