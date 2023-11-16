@@ -1,14 +1,14 @@
 package com.example.demo.service;
 
 
-import com.example.demo.model.OriginalAndTranslatedJoke;
-
-import java.util.List;
+import com.example.demo.model.Joke;
 
 public interface FileOperationsService {
 
-    void writeToFile(List<OriginalAndTranslatedJoke> origAndTranslJokes, Integer firstListLength);
+    void writeJoke(Joke joke);
 
-    void removeFromFile(Integer id);
+    void removeJoke(int id);
+
+    Joke getJoke(Integer id);
 
 }
