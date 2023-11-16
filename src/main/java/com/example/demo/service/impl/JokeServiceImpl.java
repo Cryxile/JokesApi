@@ -1,135 +1,114 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.JokeDTO;
+import com.example.demo.dto.RawJokeDTO;
 import com.example.demo.model.Joke;
-import com.example.demo.model.OriginalAndTranslatedJoke;
-import com.example.demo.service.FileOperationsService;
+import com.example.demo.model.RawJoke;
+import com.example.demo.model.db.JokeEntity;
+import com.example.demo.repository.JokeRepository;
+import com.example.demo.service.EMailService;
 import com.example.demo.service.JokeService;
 import com.example.demo.service.TranslationService;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import static com.example.demo.utils.Constants.*;
+import static com.example.demo.utils.Constants.ORIGINAL_LANGUAGE;
 
 
 @Service
 public class JokeServiceImpl implements JokeService {
     private final RestTemplate restTemplate;
     private final TranslationService translationService;
-    private final FileOperationsService fileWritingService;
-    private final List<OriginalAndTranslatedJoke> origAndTranslJokes;
+    private final JokeRepository jokeRepository;
+    private final EMailService eMailService;
+    private final String targetLang;
+    private final String resourceURL;
 
-    public JokeServiceImpl(RestTemplate restTemplate, FileOperationsService fileWritingService, TranslationService translationService) {
+    public JokeServiceImpl(RestTemplate restTemplate,
+                           TranslationService translationService,
+                           JokeRepository jokeRepository,
+                           EMailService eMailService,
+                           @Value("${translation-service.target-language}") String targetLang,
+                           @Value("${joke-service.url}") String resourceURL) {
         this.restTemplate = restTemplate;
-        this.fileWritingService = fileWritingService;
         this.translationService = translationService;
-
-        origAndTranslJokes = new ArrayList<>();
+        this.jokeRepository = jokeRepository;
+        this.eMailService = eMailService;
+        this.targetLang = targetLang;
+        this.resourceURL = resourceURL;
     }
 
     @Override
-    public void addJoke(String type, String setup, String punchline, Integer id) {
-        if (origAndTranslJokes.stream().noneMatch(e -> e.getId().equals(id))) {
-            OriginalAndTranslatedJoke originalAndTranslatedJoke = new OriginalAndTranslatedJoke(
-                    id,
-                    type,
-                    setup,
-                    punchline,
-                    setup,
-                    punchline,
-                    ORIGINAL_LANGUAGE,
-                    TARGET_LANGUAGE
-            );
-//        if (origAndTranslJokes.stream().noneMatch(e -> e.getId().equals(id))) {
-//            OriginalAndTranslatedJoke originalAndTranslatedJoke = new OriginalAndTranslatedJoke(
-//                    id,
-//                    translationService.translateString(type),
-//                    setup,
-//                    punchline,
-//                    translationService.translateString(setup),
-//                    translationService.translateString(punchline),
-//                    ORIGINAL_LANGUAGE,
-//                    TARGET_LANGUAGE
-//            );
-            //TODO Integer vs int
-            Integer prevListLength = origAndTranslJokes.size();
-            origAndTranslJokes.add(originalAndTranslatedJoke);
-            fileWritingService.writeToFile(origAndTranslJokes, prevListLength);
-        }
+    public void addJoke(RawJoke rawJoke) {
+        Joke joke = new Joke(
+                rawJoke.getId(),
+                rawJoke.getType(),
+                rawJoke.getSetup(),
+                rawJoke.getPunchline(),
+                rawJoke.getSetup(),
+                rawJoke.getPunchline(),
+                ORIGINAL_LANGUAGE,
+                targetLang
+        );
+        jokeRepository.save(new JokeEntity(joke));
     }
 
     @Override
     public void deleteJoke(Integer id) {
-        //firstListLength = origAndTranslJokes.size();
-        origAndTranslJokes.remove(getJoke(id));
-        fileWritingService.removeFromFile(id);
+        jokeRepository.deleteById(id);
     }
 
     @Override
-    public void editJoke(String type, String setup, String punchline, Integer id) {
-        OriginalAndTranslatedJoke joke = getJoke(id);
-        joke.setType(type);
-        joke.setOriginalSetup(setup);
-        joke.setTranslatedSetup(translationService.translateString(setup));
-        joke.setOriginalPunchline(punchline);
-        joke.setTranslatedPunchline(translationService.translateString(punchline));
+    public void editJoke(Joke joke) {
+        jokeRepository.save(new JokeEntity(joke));
     }
 
     @Override
-    public List<OriginalAndTranslatedJoke> getJokeList() {
-        return origAndTranslJokes;
+    public List<Joke> getJokeList() {
+        return jokeRepository.findAll().stream()
+                .map(Joke::new)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public OriginalAndTranslatedJoke getJoke(Integer id) {
-        return origAndTranslJokes.stream()
-                .filter(e ->
-                        e.getId().equals(id)
-                )
-                .findFirst()
-                .orElse(null);
+    public Joke getJoke(Integer id) {
+        return new Joke(jokeRepository.getReferenceById(id));
     }
 
     @Override
-    public OriginalAndTranslatedJoke getRandomJoke() {
-        ResponseEntity<JokeDTO> response = restTemplate.getForEntity(RESOURCE_URL, JokeDTO.class);
+    public Joke getRandomJoke() {
+        ResponseEntity<RawJokeDTO> response = restTemplate.getForEntity(resourceURL, RawJokeDTO.class);
         if (response.getStatusCode().equals(HttpStatus.OK) && response.getBody() != null) {
-            JokeDTO receivedJoke = response.getBody();
+            RawJokeDTO receivedJoke = response.getBody();
             Joke joke = new Joke(
-                    receivedJoke.getType(),
+                    receivedJoke.getId(),
+                    translationService.translateString(receivedJoke.getType()),
                     receivedJoke.getSetup(),
                     receivedJoke.getPunchline(),
-                    receivedJoke.getId()
-            );
-            Joke translatedJoke = new Joke(
-                    translationService.translateString(receivedJoke.getType()),
                     translationService.translateString(receivedJoke.getSetup()),
                     translationService.translateString(receivedJoke.getPunchline()),
-                    receivedJoke.getId()
-            );
-            OriginalAndTranslatedJoke originalAndTranslatedJoke = new OriginalAndTranslatedJoke(
-                    joke.getId(),
-                    translatedJoke.getType(),
-                    joke.getSetup(),
-                    joke.getPunchline(),
-                    translatedJoke.getSetup(),
-                    translatedJoke.getPunchline(),
                     ORIGINAL_LANGUAGE,
-                    TARGET_LANGUAGE
+                    targetLang
             );
-
-            //TODO Integer vs int
-            Integer prevListLength = origAndTranslJokes.size();
-            origAndTranslJokes.add(originalAndTranslatedJoke);
-            fileWritingService.writeToFile(origAndTranslJokes, prevListLength);
-            return originalAndTranslatedJoke;
+            jokeRepository.save(new JokeEntity(joke));
+            return joke;
         } else {
             return null;
         }
+    }
+
+    @Override
+    public void send(Integer id) {
+        eMailService.send(id);
+    }
+
+    @Override
+    public void send(Joke joke) {
+        eMailService.send(getRandomJoke());
     }
 }
