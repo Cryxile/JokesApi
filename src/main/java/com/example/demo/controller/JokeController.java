@@ -1,8 +1,9 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.JokeDTO;
-import com.example.demo.dto.OriginalAndTranslatedJokeDTO;
-import com.example.demo.model.OriginalAndTranslatedJoke;
+import com.example.demo.dto.RawJokeDTO;
+import com.example.demo.model.Joke;
+import com.example.demo.model.RawJoke;
 import com.example.demo.service.JokeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -18,66 +19,47 @@ public class JokeController {
     private final JokeService jokeService;
 
     @GetMapping("/joke/random-joke")
-    public OriginalAndTranslatedJokeDTO getRandomJoke() {
-        OriginalAndTranslatedJoke oAndTJoke = jokeService.getRandomJoke();
-        return new OriginalAndTranslatedJokeDTO(
-                oAndTJoke.getId(),
-                oAndTJoke.getType(),
-                oAndTJoke.getOriginalSetup(),
-                oAndTJoke.getOriginalPunchline(),
-                oAndTJoke.getTranslatedSetup(),
-                oAndTJoke.getTranslatedPunchline(),
-                oAndTJoke.getOriginalLanguage(),
-                oAndTJoke.getTargetLanguage()
-        );
+    public JokeDTO getRandomJoke() {
+        return new JokeDTO(jokeService.getRandomJoke());
     }
 
-    @GetMapping("/joke")
-    public List<OriginalAndTranslatedJoke> getJokeList() {
+    @GetMapping("/jokes")
+    public List<Joke> getJokeList() {
         return jokeService.getJokeList();
     }
 
     @PutMapping("/joke/add")
-    public ResponseEntity<String> addJoke(@RequestBody JokeDTO jokeDTO) {
-        jokeService.addJoke(
-                jokeDTO.getType(),
-                jokeDTO.getSetup(),
-                jokeDTO.getPunchline(),
-                jokeDTO.getId()
-        );
+    public ResponseEntity<String> addJoke(@RequestBody RawJokeDTO rawJokeDTO) {
+        jokeService.addJoke(new RawJoke(rawJokeDTO));
         return new ResponseEntity<>("Joke successfully added!", HttpStatus.OK);
     }
 
     @DeleteMapping("/joke/{id}")
-    public ResponseEntity<String> deleteJoke(@PathVariable("id") Integer id) {
+    public ResponseEntity<String> deleteJoke(@PathVariable("id") int id) {
         jokeService.deleteJoke(id);
         return new ResponseEntity<>("Joke successfully deleted!", HttpStatus.OK);
     }
 
-    @PostMapping("/joke")
+    @PostMapping("/joke/edit")
     public ResponseEntity<String> editJoke(@RequestBody JokeDTO jokeDTO) {
-        jokeService.editJoke(
-                jokeDTO.getType(),
-                jokeDTO.getSetup(),
-                jokeDTO.getPunchline(),
-                jokeDTO.getId()
-        );
+        jokeService.editJoke(new Joke(jokeDTO));
         return new ResponseEntity<>("Joke successfully edited!", HttpStatus.OK);
     }
 
-
     @GetMapping("/joke/{id}")
-    public OriginalAndTranslatedJokeDTO getJoke(@PathVariable("id") Integer id) {
-        OriginalAndTranslatedJoke oAndTJoke = jokeService.getJoke(id);
-        return new OriginalAndTranslatedJokeDTO(
-                oAndTJoke.getId(),
-                oAndTJoke.getType(),
-                oAndTJoke.getOriginalSetup(),
-                oAndTJoke.getOriginalPunchline(),
-                oAndTJoke.getTranslatedSetup(),
-                oAndTJoke.getTranslatedPunchline(),
-                oAndTJoke.getOriginalLanguage(),
-                oAndTJoke.getTargetLanguage()
-        );
+    public JokeDTO getJoke(@PathVariable("id") Integer id) {
+        return new JokeDTO(jokeService.getJoke(id));
+    }
+
+    @GetMapping("/send-joke/{id}")
+    public ResponseEntity<String> sendJoke(@PathVariable("id") Integer id) {
+        jokeService.send(id);
+        return new ResponseEntity<>("Mail have sent successfully!", HttpStatus.OK);
+    }
+
+    @GetMapping("/send-joke/random")
+    public ResponseEntity<String> sendJoke() {
+        jokeService.send(jokeService.getRandomJoke());
+        return new ResponseEntity<>("Mail have sent successfully!", HttpStatus.OK);
     }
 }
