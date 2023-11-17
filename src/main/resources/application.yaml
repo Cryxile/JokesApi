@@ -28,6 +28,7 @@ spring:
       ddl-auto: update
 email-service:
   recipient: creeper.super99@gmail.com
+  subject: Joke service test
 joke-service:
   url: https://official-joke-api.appspot.com/random_joke
 translation-service:
