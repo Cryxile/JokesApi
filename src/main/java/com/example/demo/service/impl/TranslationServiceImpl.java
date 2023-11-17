@@ -1,7 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.JokeTranslationRqDTO;
-import com.example.demo.model.JokeTranslationRs;
+import com.example.demo.model.TranslationRq;
+import com.example.demo.model.TranslationRs;
 import com.example.demo.service.TranslationService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -10,7 +10,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 
-import static com.example.demo.utils.Constants.*;
+import static com.example.demo.constants.Constants.*;
 
 @Service
 public class TranslationServiceImpl implements TranslationService {
@@ -39,16 +39,18 @@ public class TranslationServiceImpl implements TranslationService {
         headers.setContentType(MediaType.APPLICATION_JSON);
         headers.add(RAPID_KEY, rapidKey);
         headers.add(RAPID_HOST, rapidHost);
-        JokeTranslationRqDTO jokeTranslationRqDTO = new JokeTranslationRqDTO(
-                jokePart,
-                ORIGINAL_LANGUAGE,
-                targetLang
+        HttpEntity<TranslationRq> request = new HttpEntity<>(
+                new TranslationRq(
+                        jokePart,
+                        ORIGINAL_LANGUAGE,
+                        targetLang
+                ),
+                headers
         );
-        HttpEntity<JokeTranslationRqDTO> request = new HttpEntity<>(jokeTranslationRqDTO, headers);
-        JokeTranslationRs response = restTemplate.postForObject(
+        TranslationRs response = restTemplate.postForObject(
                 translationURL,
                 request,
-                JokeTranslationRs.class
+                TranslationRs.class
         );
         if (response != null) {
             return response.getData().getTranslations().getTranslatedText();
@@ -57,5 +59,3 @@ public class TranslationServiceImpl implements TranslationService {
         }
     }
 }
-
-
