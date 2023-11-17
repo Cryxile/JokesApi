@@ -1,6 +1,5 @@
 package com.example.demo.model.db;
 
-import com.example.demo.model.Joke;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,16 +17,6 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "jokes")
 public class JokeEntity {
-    public JokeEntity(Joke joke) {
-        id = joke.getId();
-        type = joke.getType();
-        originalSetup = joke.getOriginalSetup();
-        originalPunchline = joke.getOriginalPunchline();
-        translatedSetup = joke.getTranslatedSetup();
-        translatedPunchline = joke.getTranslatedPunchline();
-        originalLanguage = joke.getOriginalLanguage();
-        targetLanguage = joke.getTargetLanguage();
-    }
     @Id
     @Column(name = "id")
     private Integer id;
