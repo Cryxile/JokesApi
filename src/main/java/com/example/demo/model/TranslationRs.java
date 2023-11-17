@@ -7,7 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class JokeTranslationRs {
+public class TranslationRs {
 
     private TranslatedData data;
 
