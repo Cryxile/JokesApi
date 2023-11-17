@@ -2,8 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.dto.JokeDTO;
 import com.example.demo.dto.RawJokeDTO;
+import com.example.demo.mapper.JokeMapper;
 import com.example.demo.model.Joke;
-import com.example.demo.model.RawJoke;
 import com.example.demo.service.JokeService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -17,10 +17,11 @@ import java.util.List;
 public class JokeController {
 
     private final JokeService jokeService;
+    private final JokeMapper jokeMapper;
 
     @GetMapping("/joke/random-joke")
     public JokeDTO getRandomJoke() {
-        return new JokeDTO(jokeService.getRandomJoke());
+        return jokeMapper.mapJokeToJokeDto(jokeService.getRandomJoke());
     }
 
     @GetMapping("/jokes")
@@ -30,7 +31,7 @@ public class JokeController {
 
     @PutMapping("/joke/add")
     public ResponseEntity<String> addJoke(@RequestBody RawJokeDTO rawJokeDTO) {
-        jokeService.addJoke(new RawJoke(rawJokeDTO));
+        jokeService.addJoke(jokeMapper.mapRawJokeDtoToRawJoke(rawJokeDTO));
         return new ResponseEntity<>("Joke successfully added!", HttpStatus.OK);
     }
 
@@ -42,13 +43,13 @@ public class JokeController {
 
     @PostMapping("/joke/edit")
     public ResponseEntity<String> editJoke(@RequestBody JokeDTO jokeDTO) {
-        jokeService.editJoke(new Joke(jokeDTO));
+        jokeService.editJoke(jokeMapper.mapJokeDtoToJoke(jokeDTO));
         return new ResponseEntity<>("Joke successfully edited!", HttpStatus.OK);
     }
 
     @GetMapping("/joke/{id}")
     public JokeDTO getJoke(@PathVariable("id") Integer id) {
-        return new JokeDTO(jokeService.getJoke(id));
+        return jokeMapper.mapJokeToJokeDto(jokeService.getJoke(id));
     }
 
     @GetMapping("/send-joke/{id}")
