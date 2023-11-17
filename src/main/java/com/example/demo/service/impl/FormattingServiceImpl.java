@@ -4,7 +4,7 @@ import com.example.demo.model.Joke;
 import com.example.demo.service.FormattingService;
 import org.springframework.stereotype.Service;
 
-import static com.example.demo.utils.Constants.MESSAGE_FORMAT_TEMPLATE;
+import static com.example.demo.constants.Constants.MESSAGE_FORMAT_TEMPLATE;
 
 @Service
 public class FormattingServiceImpl implements FormattingService {
